@@ -46,10 +46,10 @@ ggplot() +
 # Identify the canal. It is not named.
 # We know from manual inspection that the id is 68194453.
 
-# Subset out plot.
+# Subset to check if removal would help.
 ggplot() +
   geom_sf(data = ams_real_sf) +
-  geom_sf(data = dplyr::filter(water_poly_sf, osm_id != "68194453"),
+  geom_sf(data = filter(water_poly_sf, osm_id != "68194453"),
           fill = "blue", colour = "transparent")
 
 # We don't want to exclude local lakes that fall outside the gemeente, so 
@@ -61,6 +61,8 @@ ggplot() +
   geom_sf(data = ams_buf_sf, fill = "red", alpha = 0.7) +
   geom_sf(data = ams_sf, fill = "black")
 
+# Let's first see if an intersection would work for others too.
+
 # Intersect using the buffer.
 ams_water_sf <- water_poly_sf %>% 
   st_intersection(ams_buf_sf)
@@ -71,4 +73,45 @@ ggplot() +
   geom_sf(data = ams_real_sf, fill = "transparent") 
 
 # Query to get green spaces.
-  
+grass_query_sf <- opq(bbox = bb_sf) %>% 
+  add_osm_feature(key = 'landuse', value = 'grass') %>%
+  osmdata_sf() 
+
+# Check contents.
+grass_sf <- grass_query_sf$osm_polygons
+
+# Plot.
+ggplot() +
+  geom_sf(data = ams_real_sf) +
+  geom_sf(data = grass_sf, fill = "darkgreen", col = "transparent")
+
+# Add forests.
+forest_query_sf <- opq(bbox = bb_sf) %>% 
+  add_osm_feature(key = 'landuse', value = 'forest') %>%
+  osmdata_sf() 
+
+# Check contents.
+forest_sf <- forest_query_sf$osm_polygons
+
+# Check everything.
+ggplot() +
+  geom_sf(data = ams_real_sf) +
+  geom_sf(data = grass_sf , fill = "yellowgreen", col = "transparent") +
+  geom_sf(data = forest_sf, fill = "forestgreen", col = "transparent") +
+  geom_sf(data = ams_water_sf, fill = "#83d7ee" , col = "transparent") 
+
+# Buildings.
+building_query_sf <- opq(bbox = bb_sf) %>% 
+  add_osm_feature(key = 'building') %>%
+  osmdata_sf() 
+
+# Extract polygons.
+building_sf <- building_query_sf$osm_polygons
+
+# Plot everything.
+ggplot() +
+  geom_sf(data = ams_real_sf) +
+  geom_sf(data = grass_sf    , fill = "yellowgreen", col = "transparent") +
+  geom_sf(data = forest_sf   , fill = "forestgreen", col = "transparent") +
+  geom_sf(data = ams_water_sf, fill = "#83d7ee"    , col = "transparent") +
+  geom_sf(data = building_sf , fill = "lightgrey"  , col = "transparent") 
