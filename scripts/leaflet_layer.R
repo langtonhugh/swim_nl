@@ -87,13 +87,14 @@ nonof_popups <- unlist(swim_list_labs[2])
 
 # Amsterdam.
 leaflet() %>%
-  setView(lng=4.8998371, lat=52.3788467, zoom = 10) %>% 
-  addProviderTiles("Stamen.Toner") %>% 
+  setView(lng=4.8998371, lat=52.3788467, zoom = 10.5) %>% 
+  # addProviderTiles("Stamen.Toner") %>%
+  # addTiles() %>% 
+  addProviderTiles("CartoDB.Positron") %>% 
   addCircleMarkers(data  = swim_notofficial_sf,
                    popup = nonof_popups,
                    color = "red") %>% 
   addCircleMarkers(data  = swim_official_sf,
                    popup = of_popups,
                    color = "blue")
-
 
