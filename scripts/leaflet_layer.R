@@ -53,7 +53,7 @@ swim_coords_sf <- swim_df %>%
 # Add hyperlinks and link to photos.
 swim_coords_sf <- swim_coords_sf %>% 
   mutate(Information_link = paste0("<a href = ", Information, "> Latest health information</a>"),
-         Photos           = paste0("<img src = ", Photos, ">"))
+         Photos           = paste0("<img src = ", Photos, " width = 300>"))
 
 # Split into official and non-official/
 swim_official_sf <- swim_coords_sf %>% 
@@ -73,7 +73,7 @@ swim_list_pastes <- lapply(swim_list, function(x){
          x$Entry           , "<br>",
          x$Use             , "<br>",
          x$Official        , "<br>",
-         x$Information_link, "<br>",
+         x$Information_link, "<br>", "<br>",
          x$Photos)
 }
 )
