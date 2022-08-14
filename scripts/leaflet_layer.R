@@ -50,36 +50,50 @@ swim_coords_sf <- swim_df %>%
 #   geom_sf(data = ams_real_sf) +
 #   geom_sf(data = swim_coords_sf)
 
+# Add hyperlinks and link to photos.
+swim_coords_sf <- swim_coords_sf %>% 
+  mutate(Information_link = paste0("<a href = ", Information, "> Latest health information</a>"),
+         Photos           = paste0("<img src = ", Photos, ">"))
+
 # Split into official and non-official/
 swim_official_sf <- swim_coords_sf %>% 
-  filter(Official == "Official swim spot")
+  filter(Official == "Official outdoor swim spot")
 
 swim_notofficial_sf <- swim_coords_sf %>% 
-  filter(Official == "Not official swim spot")
+  filter(Official == "Not official")
+
+# Create popup label because it is the same for both.
+
+# Make list.
+swim_list <- list(swim_official_sf, swim_notofficial_sf)
+
+# Paste contents to labels.
+swim_list_pastes <- lapply(swim_list, function(x){
+  paste0(x$Name            , "<br>",
+         x$Entry           , "<br>",
+         x$Use             , "<br>",
+         x$Official        , "<br>",
+         x$Information_link, "<br>",
+         x$Photos)
+}
+)
+
+# Unlist the initial list.
+swim_list_labs <- lapply(swim_list_pastes, unlist)
+
+# Unlist again  and split to create character vectors for the popups.
+of_popups    <- unlist(swim_list_labs[1])
+nonof_popups <- unlist(swim_list_labs[2])
 
 # Amsterdam.
 leaflet() %>%
-  setView(lng=4.8998371, lat=52.3788467, zoom = 11) %>% 
+  setView(lng=4.8998371, lat=52.3788467, zoom = 10) %>% 
   addProviderTiles("Stamen.Toner") %>% 
-  addCircleMarkers(data = swim_notofficial_sf,
-                   popup = paste0(swim_notofficial_sf$Name   , "<br>",
-                                 swim_notofficial_sf$Entry   , "<br>",
-                                 swim_notofficial_sf$Use     , "<br>",
-                                 swim_notofficial_sf$Official, "<br>",
-                                 swim_notofficial_sf$Comments, "<br>",
-                                 "<img src = ",
-                                 swim_notofficial_sf$Photos,
-                                 ">"),
+  addCircleMarkers(data  = swim_notofficial_sf,
+                   popup = nonof_popups,
                    color = "red") %>% 
-  addCircleMarkers(data = swim_official_sf,
-                   popup = paste0(swim_official_sf$Name     , "<br>",
-                                  swim_official_sf$Entry    , "<br>",
-                                  swim_official_sf$Use      , "<br>",
-                                  swim_official_sf$Official , "<br>",
-                                  swim_official_sf$Comments , "<br>",
-                                  "<img src = ",
-                                  swim_official_sf$Photos,
-                                  ">"),
+  addCircleMarkers(data  = swim_official_sf,
+                   popup = of_popups,
                    color = "blue")
 
 
