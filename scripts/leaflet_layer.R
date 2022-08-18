@@ -73,6 +73,7 @@ swim_list_pastes <- lapply(swim_list, function(x){
          x$Entry           , "<br>",
          x$Use             , "<br>",
          x$Official        , "<br>",
+         x$Comments        , "<br>",
          x$Information_link, "<br>", "<br>",
          x$Photos)
 }
